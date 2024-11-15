@@ -55,3 +55,47 @@ size_t hash_cantidad(hash_t* hash){
         return 0;
     return hash->cantidad;
 }
+
+size_t funcion_hash(const char* clave,size_t capacidad){
+
+    size_t pos = 0;
+    
+
+    for (size_t i = 0; clave[i] != '\0'; i++) {
+        pos = pos * 3 + (unsigned char)clave[i];
+    }
+
+    return pos % capacidad;    
+}
+
+bool hash_insertar(hash_t* hash, char* clave, void* valor, void** encontrado){
+
+    if(clave==NULL || hash==NULL)
+        return false;
+    size_t pos=funcion_hash(clave,hash->capacidad);
+    nodo_t* nuevo_nodo=crear_nodo(clave,valor);
+    if(nuevo_nodo==NULL)
+        return false;
+    bool respuesta= insertar_nodo(&(hash->vector[pos]),nuevo_nodo,encontrado);
+    if(respuesta)
+        hash->cantidad++;
+    return respuesta;
+
+}
+
+void* hash_buscar(hash_t* hash, char* clave){
+    if(hash==NULL || clave==NULL)
+        return NULL;
+    
+    size_t pos=funcion_hash(clave,hash->capacidad);
+
+    return buscar_nodo_elemento(&(hash->vector[pos]),clave);
+
+}
+
+bool hash_contiene(hash_t* hash, char* clave){
+    void* existe = hash_buscar(hash,clave);
+    if(existe==NULL)
+        return false;
+    return true;
+}

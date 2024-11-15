@@ -1,4 +1,5 @@
 #include "nodos.h"
+#include <stdlib.h>
 nodo_t* crear_nodo(char* clave,void* valor){
     nodo_t* nuevo_nodo=malloc(sizeof(nodo_t));
     if(nuevo_nodo==NULL)
@@ -22,4 +23,48 @@ void destuir_nodos(nodo_t* nodo,void (*destructor)(void*)){
         free(temp->clave);  
         free(temp);
     }
+}
+
+void* buscar_nodo_elemento(nodo_t** primer_nodo,char* clave){
+    nodo_t* aux=*primer_nodo;
+
+    if(aux==NULL)
+        return NULL;
+    
+    while(aux->siguiente!=NULL && strcmp(aux->clave, clave) != 0){
+        aux=aux->siguiente;
+    }
+
+    if(strcmp(aux->clave, clave) == 0){
+        return aux->valor;
+    }
+    return NULL;
+}
+
+bool insertar_nodo(nodo_t** primer_nodo,nodo_t* nuevo_nodo,void** encontrado){
+    if(nuevo_nodo==NULL)
+        return false;
+    nodo_t* aux=*primer_nodo;
+
+    if(aux==NULL){
+        *primer_nodo=nuevo_nodo;
+        return true;
+    }
+    
+    while(aux->siguiente!=NULL && strcmp(aux->clave, nuevo_nodo->clave) != 0){
+        aux=aux->siguiente;
+    }
+    if (strcmp(aux->clave, nuevo_nodo->clave) == 0) {
+        if (encontrado) 
+            *encontrado = aux->valor;
+        free(aux->clave);  
+        aux->clave = nuevo_nodo->clave;
+        aux->valor = nuevo_nodo->valor;
+        free(nuevo_nodo);  
+        return true;
+    }
+
+    aux->siguiente=nuevo_nodo;
+    return true;
+    
 }
