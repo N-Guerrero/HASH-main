@@ -26,6 +26,8 @@ void destuir_nodos(nodo_t* nodo,void (*destructor)(void*)){
 }
 
 void* buscar_nodo_elemento(nodo_t** primer_nodo,char* clave){
+    if(primer_nodo==NULL)
+        return NULL;
     nodo_t* aux=*primer_nodo;
 
     if(aux==NULL)
@@ -40,9 +42,36 @@ void* buscar_nodo_elemento(nodo_t** primer_nodo,char* clave){
     }
     return NULL;
 }
+void* quitar_nodo(nodo_t** primer_nodo,char* clave){
+    if(primer_nodo==NULL)
+        return NULL;
+    nodo_t* aux=*primer_nodo;
+    nodo_t* anterior=NULL;
+    if(aux==NULL)
+        return NULL;
+    
+    while(aux!=NULL && strcmp(aux->clave, clave) != 0){
+        anterior=aux;
+        aux=aux->siguiente;
+    }
+
+    if(aux==NULL)
+        return NULL;
+    if(anterior==NULL)
+        *primer_nodo=aux->siguiente;
+    else{
+        anterior->siguiente=aux->siguiente;
+    }
+    
+    void* encontrado = aux->valor;
+    free(aux->clave);
+    free(aux);
+    return encontrado;
+
+}
 
 bool insertar_nodo(nodo_t** primer_nodo,nodo_t* nuevo_nodo,void** encontrado){
-    if(nuevo_nodo==NULL)
+    if(nuevo_nodo==NULL || primer_nodo==NULL)
         return false;
     nodo_t* aux=*primer_nodo;
 

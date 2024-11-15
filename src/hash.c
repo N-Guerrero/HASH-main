@@ -99,3 +99,35 @@ bool hash_contiene(hash_t* hash, char* clave){
         return false;
     return true;
 }
+
+
+void* hash_quitar(hash_t* hash, char* clave){
+    if(hash==NULL || clave==NULL)
+        return NULL;
+    
+    size_t pos=funcion_hash(clave,hash->capacidad);
+    void* respuesta= quitar_nodo(&(hash->vector[pos]),clave);
+    if(respuesta!= NULL)
+        hash->cantidad--;
+    return respuesta;
+}
+
+size_t hash_iterar(hash_t* hash, bool (*f)(char*, void*, void*), void* ctx){
+    if(hash==NULL || f==NULL)
+        return 0;
+
+    size_t cantidad=0;
+    for(size_t i=0;i<hash->capacidad;i++){
+        if(hash->vector[i]==NULL)
+            continue;
+        nodo_t* aux=hash->vector[i];
+        bool continuar=true;
+        while(aux!=NULL && continuar){
+
+            continuar=f(aux->clave,aux->valor,ctx);
+            cantidad++;
+            aux=aux->siguiente;
+        }
+    }
+    return cantidad;
+}
