@@ -2,14 +2,18 @@
 #include <stdlib.h>
 nodo_t *crear_nodo(char *clave, void *valor)
 {
+	if (clave == NULL)
+		return NULL;
 	nodo_t *nuevo_nodo = malloc(sizeof(nodo_t));
 	if (nuevo_nodo == NULL)
 		return NULL;
 	nuevo_nodo->valor = valor;
 	nuevo_nodo->siguiente = NULL;
-	nuevo_nodo->clave = malloc(sizeof(strlen(clave) + 1));
-	if (nuevo_nodo->clave == NULL)
+	nuevo_nodo->clave = malloc(strlen(clave) + 1);
+	if (nuevo_nodo->clave == NULL) {
+		free(nuevo_nodo);
 		return NULL;
+	}
 	strcpy(nuevo_nodo->clave, clave);
 
 	return nuevo_nodo;
@@ -73,13 +77,16 @@ void *quitar_nodo(nodo_t **primer_nodo, char *clave)
 	return encontrado;
 }
 
-bool insertar_nodo(nodo_t **primer_nodo, nodo_t *nuevo_nodo, void **encontrado)
+bool insertar_nodo(nodo_t **primer_nodo, nodo_t *nuevo_nodo, void **encontrado,
+		   bool *modificar)
 {
 	if (nuevo_nodo == NULL || primer_nodo == NULL)
 		return false;
 	nodo_t *aux = *primer_nodo;
 
 	if (aux == NULL) {
+		if (encontrado)
+			*encontrado = NULL;
 		*primer_nodo = nuevo_nodo;
 		return true;
 	}
@@ -95,6 +102,7 @@ bool insertar_nodo(nodo_t **primer_nodo, nodo_t *nuevo_nodo, void **encontrado)
 		aux->clave = nuevo_nodo->clave;
 		aux->valor = nuevo_nodo->valor;
 		free(nuevo_nodo);
+		*modificar = true;
 		return true;
 	}
 

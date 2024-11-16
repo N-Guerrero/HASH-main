@@ -17,8 +17,11 @@ void prueba_insertar()
 
 	int a = 10, v = 23;
 
-	pa2m_afirmar(hash_insertar(tabla_1, "hola", &a, NULL),
-		     "inseretado en tabla_1");
+	pa2m_afirmar(
+		hash_insertar(tabla_1,
+			      "holacskoajcoaneincaiosclaxcmnoasihiucadslkcnsoj",
+			      &a, NULL),
+		"inseretado en tabla_1");
 
 	pa2m_afirmar(hash_insertar(tabla_4, "ha", &v, NULL),
 		     "inseretado en tabla_4");
@@ -122,6 +125,26 @@ bool mostrar(char *clave, void *valor, void *ctx)
 	printf("valor: %d con clave: %s\n", *valor_, clave);
 	return true;
 }
+bool mostrar_3(char *clave, void *valor, void *ctx)
+{
+	int *corte = ctx;
+	if (*corte == 3)
+		return false;
+	int *valor_ = valor;
+	printf("valor: %d con clave: %s\n", *valor_, clave);
+	(*corte)++;
+	return true;
+}
+bool mostrar_5(char *clave, void *valor, void *ctx)
+{
+	int *corte = ctx;
+	if (*corte == 5)
+		return false;
+	int *valor_ = valor;
+	printf("valor: %d con clave: %s\n", *valor_, clave);
+	(*corte)++;
+	return true;
+}
 void probar_con_NULL()
 {
 	hash_t *mala_tabla = hash_crear(0);
@@ -200,6 +223,74 @@ void probar_iterar()
 
 	hash_destruir(tabla_10);
 }
+void probar_iterar_x_veces()
+{
+	hash_t *tabla_10 = hash_crear(10);
+
+	int v = 23;
+
+	hash_insertar(tabla_10, "ka", &v, NULL);
+
+	int x1 = 11, x2 = 12, x3 = 13, x4 = 41, x5 = 51, x6 = 60;
+	hash_insertar(tabla_10, "mala", &x1, NULL);
+	hash_insertar(tabla_10, "masa", &x2, NULL);
+	hash_insertar(tabla_10, "malo", &x3, NULL);
+	hash_insertar(tabla_10, "mara", &x4, NULL);
+	hash_insertar(tabla_10, "xala", &x5, NULL);
+	hash_insertar(tabla_10, "mera", &x6, NULL);
+	int check = 0;
+	int check5 = 0;
+	size_t iterar_3 = hash_iterar(tabla_10, mostrar_3, &check);
+	pa2m_afirmar(iterar_3 == 4, "se iteraron %zu elementos, check=%d ",
+		     iterar_3, check);
+
+	size_t iterar_5 = hash_iterar(tabla_10, mostrar_5, &check5);
+	pa2m_afirmar(iterar_5 == 6, "se iteraron %zu elementos,cheack=%d",
+		     iterar_5, check5);
+
+	hash_destruir(tabla_10);
+}
+void probar_cantidad_modificar()
+{
+	hash_t *tabla_1 = hash_crear(1);
+
+	int a = 10, b = 40;
+
+	pa2m_afirmar(hash_insertar(tabla_1, "hola", &a, NULL),
+		     "inseretado %d en tabla_1", a);
+
+	pa2m_afirmar(hash_cantidad(tabla_1) == 1, "cantidad elementos 1");
+	void *anterior = NULL;
+	pa2m_afirmar(hash_insertar(tabla_1, "hola", &b, &anterior),
+		     "inseretado %d en tabla_1", b);
+	pa2m_afirmar(hash_cantidad(tabla_1) == 1, "cantidad elementos 1");
+
+	pa2m_afirmar(anterior != NULL, "se remplazo a %d", *(int *)anterior);
+
+	hash_destruir(tabla_1);
+}
+
+void probar_insertar_quitar()
+{
+	hash_t *tabla_1 = hash_crear(1);
+
+	int a = 10, b = 40;
+
+	pa2m_afirmar(hash_insertar(tabla_1, "hola", &a, NULL),
+		     "inseretado %d en tabla_1", a);
+
+	pa2m_afirmar(hash_cantidad(tabla_1) == 1, "cantidad elementos 1");
+	void *anterior = NULL;
+	pa2m_afirmar(hash_insertar(tabla_1, "hola", &b, &anterior),
+		     "inseretado %d en tabla_1", b);
+	void *quitar = hash_quitar(tabla_1, "hola");
+	pa2m_afirmar(*(int *)quitar == b, "elemento quitado es %d, correcto",
+		     *(int *)quitar);
+	pa2m_afirmar(hash_insertar(tabla_1, "hola", &b, &anterior),
+		     "inseretado %d en tabla_1", b);
+	pa2m_afirmar(anterior == NULL, "elemento modificado es NULL ");
+	hash_destruir(tabla_1);
+}
 
 int main()
 {
@@ -212,6 +303,11 @@ int main()
 	probar_con_NULL();
 	probar_quitar();
 	probar_iterar();
+	pa2m_nuevo_grupo("============== ??? ===============");
+	probar_cantidad_modificar();
+	probar_insertar_quitar();
+	pa2m_nuevo_grupo("============== ??? ===============");
+	probar_iterar_x_veces();
 
 	return pa2m_mostrar_reporte();
 }

@@ -1,6 +1,7 @@
 #include "hash.h"
 #include <stdlib.h>
 #include "nodos.h"
+#include <stdio.h>
 
 struct hash {
 	nodo_t **vector;
@@ -82,9 +83,10 @@ bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 	nodo_t *nuevo_nodo = crear_nodo(clave, valor);
 	if (nuevo_nodo == NULL)
 		return false;
-	bool respuesta =
-		insertar_nodo(&(hash->vector[pos]), nuevo_nodo, encontrado);
-	if (respuesta)
+	bool modificado = false;
+	bool respuesta = insertar_nodo(&(hash->vector[pos]), nuevo_nodo,
+				       encontrado, &modificado);
+	if (!modificado)
 		hash->cantidad++;
 	return respuesta;
 }
@@ -125,17 +127,21 @@ size_t hash_iterar(hash_t *hash, bool (*f)(char *, void *, void *), void *ctx)
 		return 0;
 
 	size_t cantidad = 0;
+	bool continuar = true;
 	for (size_t i = 0; i < hash->capacidad; i++) {
 		if (hash->vector[i] == NULL)
 			continue;
 		nodo_t *aux = hash->vector[i];
-		bool continuar = true;
+
 		while (aux != NULL && continuar) {
 			continuar = f(aux->clave, aux->valor, ctx);
 			cantidad++;
+			//printf("cantidad %zu\n",cantidad);
+
 			aux = aux->siguiente;
 		}
 	}
+	// printf("capacidad %zu\n",hash->cantidad);
 	return cantidad;
 }
 
