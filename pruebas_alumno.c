@@ -1,5 +1,6 @@
 #include "pa2m.h"
 #include "src/hash.h"
+
 void prueba_crear()
 {
 	hash_t *tabla_1 = hash_crear(1);
@@ -269,6 +270,48 @@ void probar_cantidad_modificar()
 
 	hash_destruir(tabla_1);
 }
+void probar_muchas_inserciones()
+{
+	hash_t *tabla_10 = hash_crear(10);
+	bool insertados = false;
+	for (int i = 0; i < 10000; i++) {
+		// Generar una clave única basada en el número
+		char clave[16];
+		snprintf(clave, sizeof(clave), "%d", i);
+		int valor = i;
+		void *encontrado = NULL;
+		insertados =
+			hash_insertar(tabla_10, clave, &valor, &encontrado);
+	}
+	pa2m_afirmar(insertados, "se insertaron 1000 claves");
+	pa2m_afirmar(hash_cantidad(tabla_10) == 10000, "cantidad 1000");
+
+	for (int i = 0; i < 2500; i++) {
+		// Generar una clave única basada en el número
+		char clave[16];
+		snprintf(clave, sizeof(clave), "%d", i);
+
+		hash_quitar(tabla_10, clave);
+	}
+	printf("quitados\n");
+	pa2m_afirmar(hash_cantidad(tabla_10) == 7500, "cantidad %zu",
+		     hash_cantidad(tabla_10));
+
+	bool inserta2 = false;
+	for (int i = 0; i < 10000; i++) {
+		// Generar una clave única basada en el número
+		char clave2[16];
+		snprintf(clave2, sizeof(clave2), "%d", i);
+		int valor2 = i;
+		void *encontrado2 = NULL;
+		inserta2 =
+			hash_insertar(tabla_10, clave2, &valor2, &encontrado2);
+	}
+	pa2m_afirmar(inserta2, "se insertaron las claves");
+	pa2m_afirmar(hash_cantidad(tabla_10) == 10000, "cantidad %zu",
+		     hash_cantidad(tabla_10));
+	hash_destruir(tabla_10);
+}
 
 void probar_insertar_quitar()
 {
@@ -308,6 +351,7 @@ int main()
 	probar_insertar_quitar();
 	pa2m_nuevo_grupo("============== ??? ===============");
 	probar_iterar_x_veces();
+	probar_muchas_inserciones();
 
 	return pa2m_mostrar_reporte();
 }

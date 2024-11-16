@@ -55,6 +55,7 @@ size_t hash_cantidad(hash_t *hash)
 {
 	if (hash == NULL)
 		return 0;
+	printf("cantidad=%zu\n", hash->cantidad);
 	return hash->cantidad;
 }
 
@@ -147,7 +148,7 @@ size_t hash_iterar(hash_t *hash, bool (*f)(char *, void *, void *), void *ctx)
 
 void re_hash(hash_t *hash)
 {
-	size_t nueva_capacidad = hash->cantidad * 2;
+	size_t nueva_capacidad = hash->capacidad * 2;
 	nodo_t **nuevo_vector = calloc(nueva_capacidad, sizeof(nodo_t *));
 	if (nuevo_vector == NULL)
 		return;
