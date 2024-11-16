@@ -87,6 +87,7 @@ bool insertar_nodo(nodo_t **primer_nodo, nodo_t *nuevo_nodo, void **encontrado,
 	if (aux == NULL) {
 		if (encontrado)
 			*encontrado = NULL;
+		*modificar = false;
 		*primer_nodo = nuevo_nodo;
 		return true;
 	}
@@ -105,7 +106,7 @@ bool insertar_nodo(nodo_t **primer_nodo, nodo_t *nuevo_nodo, void **encontrado,
 		*modificar = true;
 		return true;
 	}
-
+	*modificar = false;
 	aux->siguiente = nuevo_nodo;
 	return true;
 }

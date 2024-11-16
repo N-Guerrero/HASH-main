@@ -87,7 +87,7 @@ bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 	bool modificado = false;
 	bool respuesta = insertar_nodo(&(hash->vector[pos]), nuevo_nodo,
 				       encontrado, &modificado);
-	if (!modificado)
+	if (!modificado && respuesta)
 		hash->cantidad++;
 	return respuesta;
 }
