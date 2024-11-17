@@ -24,32 +24,54 @@ valgrind ./a.out pokedex.csv
 ---
 ##  Funcionamiento
 
-Para realizar este diccionario utilice 2 estructuras, una del hash y otra de nodos. El hash guarda la cantidad de elementos, la capacidad maxima del hash y un puntero a un vector de nodos
-
-
-Explicación de cómo funcionan las estructuras desarrolladas en el TP y el funcionamiento general del mismo.
-
-Aclarar en esta parte todas las decisiones que se tomaron al realizar el TP, cosas que no se aclaren en el enunciado, fragmentos de código que necesiten explicación extra, etc.
-
-Incluir **EN TODOS LOS TPS** los diagramas relevantes al problema (mayormente diagramas de memoria para explicar las estructuras, pero se pueden utilizar otros diagramas si es necesario).
-
-### Por ejemplo:
-
-El programa funciona abriendo el archivo pasado como parámetro y leyendolo línea por línea. Por cada línea crea un registro e intenta agregarlo al vector. La función de lectura intenta leer todo el archivo o hasta encontrar el primer error. Devuelve un vector con todos los registros creados.
-
+Para realizar este diccionario utilicé 2 estructuras, una del hash y otra de nodos. El struct hash guarda la cantidad de elementos, la capacidad maxima del hash y un puntero a un vector de nodos. Los noodos guardan una clave, un valor y un puntero al suigiente nodo.El vector del hash es de tipo `nodo_t**`, osea, un vector de puneteros nodo_t. Esto me permite tener un vector facil de manejar y de remplazar en el rehash.
 <div align="center">
-<img width="70%" src="img/diagrama1.svg">
+<img width="70%" src="img/hash_estructura.svg">
 </div>
 
-En el archivo `sarasa.c` la función `funcion1` utiliza `realloc` para agrandar la zona de memoria utilizada para conquistar el mundo. El resultado de `realloc` lo guardo en una variable auxiliar para no perder el puntero original en caso de error:
 
+En mi implementacion del hash use el mismo enfoque con todas las funciones del TDA de la siguiente manera:
+
+* Recorro el vector de nodos o, si tengo una clave como parametro, encuentro la posicion del vector en la que estoy interesado con la funcion de Hash.
+* Por cada posicion del vector llamo a una funcion que se encarga de moverse por los nodos conectados para realizar una busqueda,insercion o eliminacion.
+* Finalmente devuelvo el resultado de la funcion de nodos.
+
+Decidi hacerlo de esta manera para tener bien separado el funcionamiento en la tabla(vector) del hash y el funcionamiento de los nodos en cada posicion de la tabla.
+
+Para crear nodos con claves copiadas utilizo malloc y strcpy. Asi la clave no puede ser modificada desde afuera.
 ```c
-int *vector = realloc(vector_original, (n+1)*sizeof(int));
-
-if(vector == NULL)
-    return -1;
-vector_original = vector;
+nuevo_nodo->clave = malloc(strlen(clave) + 1);
+	if (nuevo_nodo->clave == NULL) {
+		free(nuevo_nodo);
+		return NULL;
+	}
+	strcpy(nuevo_nodo->clave, clave);
 ```
+Cada insercion en la tabla tambien verifica que esta misma no este muy llena, si lo está, tengo que hacer un Rehash.
+Para hacer el Rehash primero creo un vector de `nodo_t**` con el doble de capacidad que el original y empiezo a mover los nodos del vector original al nuevo vector.
+```c
+for (size_t i = 0; i < hash->capacidad; i++) {
+		nodo_t *aux = hash->vector[i];
+		while (aux != NULL) {
+			size_t pos = funcion_hash(aux->clave, nueva_capacidad);
+			nodo_t *siguiente = aux->siguiente;
+
+			aux->siguiente = nuevo_vector[pos];
+			nuevo_vector[pos] = aux;
+
+			aux = siguiente;
+		}
+	}
+```
+* Recorro cada posicion del vector original y le asigno un ptr aux `nodo_t *aux = hash->vector[i];`
+* Calculo la posicion del nodo en el nuevo vector
+* Guardo el siguiente nodo para no perderlo`nodo_t *siguiente = aux->siguiente;`
+* Apunto el puntero al siguiente nodo de AUX a lo que sea que esté en donde voy a poner a AUX`aux->siguiente = nuevo_vector[pos];`
+* Meto a AUX en el nuevo vector`nuevo_vector[pos] = aux;` y como AUX->siguiente apunta a lo que estaba antes en `nuevo_vector[pos]` no se pierde nada
+* Finalmente avanzo al siguiente nodo`aux = siguiente;`
+
+
+
 
 
 <div align="center">
