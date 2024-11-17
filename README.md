@@ -101,7 +101,9 @@ Se puede implementar un diccionario como:
 <div align="center">
 <img width="70%" src="img/tabla_hash.svg">
 </div>
-La tabla Hash maneja las coliciones de diferentes maneras, las 2 maneras principales que vimos son tabla abierta y tabla cerrada. En la tabla abierta, diferentes claves pueden encontrarse en la misma sposicion de un vector, pero se encadenan resultando en una cadena de pares que tienen una posicion compartida en el vector(es el tipo de implementacion que realizamos). Otra manera es con la tabla cerrada, en esta todos los elementos se almacenan directamente en el vector. Si ocurre una colisión, se busca otra posición vacía siguiendo una estrategia. Puede ser `Probing lineal` , `probing cuadratico` o `hash doble`. El Probing lineal busca el siguiente espacio libre inmediato. El Probing cuadrático (intentos fallidos)2 para intentar,osea, en lugar de avanzar linealmente utiliza un incremento cuadrático. El Hash doble aplica una segunda función de hash a la clave cuando hay colisión.
+La tabla Hash maneja las coliciones de diferentes maneras, las 2 maneras principales que vimos son tabla abierta y tabla cerrada. En la tabla abierta, diferentes claves pueden encontrarse en la misma sposicion de un vector, pero se encadenan resultando en una cadena de pares que tienen una posicion compartida en el vector(es el tipo de implementacion que realizamos). Otra manera es con la tabla cerrada, en esta todos los elementos se almacenan directamente en el vector. Si ocurre una colisión, se busca otra posición vacía siguiendo una estrategia. Puede ser `Probing lineal` , `probing cuadratico` o `hash doble`. 
+
+El Probing lineal busca el siguiente espacio libre inmediato. El Probing cuadrático (intentos fallidos)2 para intentar,osea, en lugar de avanzar linealmente utiliza un incremento cuadrático. El Hash doble aplica una segunda función de hash a la clave cuando hay colisión.
 
 
 -un ABB en el que cada nodo tiene una clave, un valor y referencias a sus hijos izquierdo y derecho.
@@ -113,6 +115,7 @@ La tabla Hash maneja las coliciones de diferentes maneras, las 2 maneras princip
 <div align="center">
 <img width="70%" src="img/lista_hash.svg">
 </div>
+---
 
 
 El tamaño de la tabla es esencial tanto en tablas abiertas como en cerradas, ya que afecta directamente el rendimiento de las operaciones. Las tablas utilizan una funcion hash y esta funcion hash calcula una posicion basada en el tamaño de la tabla, con menos espacio hay más coliciones. 
