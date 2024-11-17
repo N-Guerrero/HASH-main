@@ -69,14 +69,15 @@ for (size_t i = 0; i < hash->capacidad; i++) {
 * Apunto el puntero al siguiente nodo de AUX a lo que sea que esté en donde voy a poner a AUX`aux->siguiente = nuevo_vector[pos];`
 * Meto a AUX en el nuevo vector`nuevo_vector[pos] = aux;` y como AUX->siguiente apunta a lo que estaba antes en `nuevo_vector[pos]` no se pierde nada
 * Finalmente avanzo al siguiente nodo`aux = siguiente;`
-
-
-
-
-
 <div align="center">
-<img width="70%" src="img/diagrama2.svg">
+<img width="70%" src="img/rehash.svg">
 </div>
+Asi el rehash aumenta la capacidad y mueve los nodos, asi que la cantidad se mantiene igual y la evito tener errores con la cantidad. 
+
+
+
+
+
 
 Explicá teóricamente los siguientes puntos (no necesariamente en orden, pero por favor usando diagramas):
 
@@ -89,4 +90,4 @@ Mas te vale que expliques con dibujos
 ---
 
 ## Respuestas a las preguntas teóricas
-Incluír acá las respuestas a las preguntas del enunciado (si aplica).
+
