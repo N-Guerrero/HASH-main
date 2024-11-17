@@ -122,8 +122,11 @@ void prueba_contiene()
 
 bool mostrar(char *clave, void *valor, void *ctx)
 {
-	int *valor_ = valor;
-	printf("valor: %d con clave: %s\n", *valor_, clave);
+	int *total = ctx;
+	//int *valor_ = valor;
+	//printf("valor: %d con clave: %s\n", *valor_, clave);
+	if (total != NULL)
+		(*total)++;
 	return true;
 }
 bool mostrar_3(char *clave, void *valor, void *ctx)
@@ -193,12 +196,21 @@ void probar_quitar()
 	hash_insertar(tabla_10, "mara", &x4, NULL);
 	hash_insertar(tabla_10, "xala", &x5, NULL);
 	hash_insertar(tabla_10, "mera", &x6, NULL);
+	hash_insertar(tabla_10, "hola", NULL, NULL);
 
 	void *quitado = hash_quitar(tabla_10, "xala");
+	pa2m_afirmar(hash_cantidad(tabla_10) == 7, "cantidad final %zu",
+		     hash_cantidad(tabla_10));
+
+	void *quitar_null = hash_quitar(tabla_10, "hola");
 
 	pa2m_afirmar(*(int *)quitado == x5, "quitado %d de la tabla",
 		     *(int *)quitado);
 
+	pa2m_afirmar(quitar_null == NULL, "quitado %p de la tabla",
+		     quitar_null);
+	pa2m_afirmar(hash_cantidad(tabla_10) == 6, "cantidad final %zu",
+		     hash_cantidad(tabla_10));
 	hash_destruir(tabla_10);
 }
 void probar_iterar()
@@ -294,9 +306,10 @@ void probar_muchas_inserciones()
 
 		hash_quitar(tabla_10, clave);
 	}
-	printf("quitados\n");
+	printf("elementos quitados\n");
+
 	pa2m_afirmar(hash_cantidad(tabla_10) == (50000 - (50000 / 3)),
-		     "cantidad %zu", hash_cantidad(tabla_10));
+		     "cantidad despues de quitar %zu", hash_cantidad(tabla_10));
 
 	bool inserta2 = false;
 	for (int i = 0; i < 50000; i++) {
@@ -308,9 +321,10 @@ void probar_muchas_inserciones()
 		inserta2 =
 			hash_insertar(tabla_10, clave2, &valor2, &encontrado2);
 	}
-	pa2m_afirmar(inserta2, "se insertaron las claves");
-	pa2m_afirmar(hash_cantidad(tabla_10) == 50000, "cantidad %zu",
+	pa2m_afirmar(inserta2, "se insertaron las claves otra vez");
+	pa2m_afirmar(hash_cantidad(tabla_10) == 50000, "cantidad final %zu",
 		     hash_cantidad(tabla_10));
+
 	hash_destruir(tabla_10);
 }
 
@@ -336,6 +350,79 @@ void probar_insertar_quitar()
 	hash_destruir(tabla_1);
 }
 
+void probar_remplazar_mucho()
+{
+	hash_t *tabla_10 = hash_crear(10);
+
+	int v = 23;
+
+	hash_insertar(tabla_10, "ka", &v, NULL);
+
+	int x1 = 11, x2 = 12, x3 = 13, x4 = 41, x5 = 51, x6 = 60;
+	hash_insertar(tabla_10, "mala", &x1, NULL);
+	hash_insertar(tabla_10, "masa", &x2, NULL);
+	hash_insertar(tabla_10, "malo", &x3, NULL);
+	hash_insertar(tabla_10, "mara", &x4, NULL);
+	hash_insertar(tabla_10, "xala", &x5, NULL);
+	hash_insertar(tabla_10, "mera", &x6, NULL);
+	pa2m_afirmar(hash_cantidad(tabla_10) == 7, "cantidad %zu",
+		     hash_cantidad(tabla_10));
+
+	hash_insertar(tabla_10, "mala", &x3, NULL);
+	hash_insertar(tabla_10, "masa", &x1, NULL);
+	hash_insertar(tabla_10, "malo", &x2, NULL);
+	hash_insertar(tabla_10, "mara", &x5, NULL);
+	hash_insertar(tabla_10, "xala", &x6, NULL);
+	hash_insertar(tabla_10, "mera", &x4, NULL);
+	pa2m_afirmar(hash_cantidad(tabla_10) == 7, "cantidad %zu",
+		     hash_cantidad(tabla_10));
+
+	hash_quitar(tabla_10, "mala");
+	hash_quitar(tabla_10, "malo");
+	pa2m_afirmar(hash_cantidad(tabla_10) == 5, "cantidad %zu",
+		     hash_cantidad(tabla_10));
+	hash_insertar(tabla_10, "mala", &x3, NULL);
+	hash_insertar(tabla_10, "masa", &x1, NULL);
+	hash_insertar(tabla_10, "malo", &x2, NULL);
+	hash_insertar(tabla_10, "mara", &x5, NULL);
+	hash_insertar(tabla_10, "xala", &x6, NULL);
+	hash_insertar(tabla_10, "mera", &x4, NULL);
+	pa2m_afirmar(hash_cantidad(tabla_10) == 7, "cantidad %zu",
+		     hash_cantidad(tabla_10));
+
+	hash_destruir(tabla_10);
+}
+void probar_modificar_mucho()
+{
+	hash_t *tabla_10 = hash_crear(10);
+	bool insertados = false;
+	for (int i = 0; i < 50000; i++) {
+		// Generar una clave única basada en el número
+		char clave[16];
+		snprintf(clave, sizeof(clave), "%d", i);
+		int valor = i;
+		void *encontrado = NULL;
+		insertados =
+			hash_insertar(tabla_10, clave, &valor, &encontrado);
+	}
+	pa2m_afirmar(insertados, "se insertaron las claves");
+	pa2m_afirmar(hash_cantidad(tabla_10) == 50000, "cantidad %zu",
+		     hash_cantidad(tabla_10));
+
+	bool inserta2 = false;
+	for (int i = 0; i < 50000; i++) {
+		// Generar una clave única basada en el número
+		char clave[16];
+		snprintf(clave, sizeof(clave), "%d", i);
+		int valor = i + 1;
+		void *encontrado = NULL;
+		inserta2 = hash_insertar(tabla_10, clave, &valor, &encontrado);
+	}
+	pa2m_afirmar(inserta2, "se modificaron las claves");
+	pa2m_afirmar(hash_cantidad(tabla_10) == 50000, "cantidad %zu",
+		     hash_cantidad(tabla_10));
+	hash_destruir(tabla_10);
+}
 int main()
 {
 	pa2m_nuevo_grupo("============== ??? ===============");
@@ -353,6 +440,9 @@ int main()
 	pa2m_nuevo_grupo("============== ??? ===============");
 	probar_iterar_x_veces();
 	probar_muchas_inserciones();
+	probar_remplazar_mucho();
+	pa2m_nuevo_grupo("============== ??? ===============");
+	probar_modificar_mucho();
 
 	return pa2m_mostrar_reporte();
 }

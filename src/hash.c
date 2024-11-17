@@ -55,7 +55,7 @@ size_t hash_cantidad(hash_t *hash)
 {
 	if (hash == NULL)
 		return 0;
-	printf("cantidad=%zu\n", hash->cantidad);
+	//printf("cantidad=%zu\n", hash->cantidad);
 	return hash->cantidad;
 }
 
@@ -74,12 +74,12 @@ bool hash_insertar(hash_t *hash, char *clave, void *valor, void **encontrado)
 {
 	if (clave == NULL || hash == NULL)
 		return false;
-
-	float rehash = (float)(hash->cantidad + 1) / (float)hash->capacidad;
-	if (rehash > 0.75) {
-		re_hash(hash);
+	if (hash->cantidad != 0) {
+		float rehash = (float)(hash->cantidad) / (float)hash->capacidad;
+		if (rehash > 0.75) {
+			re_hash(hash);
+		}
 	}
-
 	size_t pos = funcion_hash(clave, hash->capacidad);
 	nodo_t *nuevo_nodo = crear_nodo(clave, valor);
 	if (nuevo_nodo == NULL)
@@ -116,8 +116,9 @@ void *hash_quitar(hash_t *hash, char *clave)
 		return NULL;
 
 	size_t pos = funcion_hash(clave, hash->capacidad);
-	void *respuesta = quitar_nodo(&(hash->vector[pos]), clave);
-	if (respuesta != NULL)
+	bool encontrado = false;
+	void *respuesta = quitar_nodo(&(hash->vector[pos]), clave, &encontrado);
+	if (encontrado)
 		hash->cantidad--;
 	return respuesta;
 }

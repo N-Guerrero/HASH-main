@@ -49,7 +49,7 @@ void *buscar_nodo_elemento(nodo_t **primer_nodo, char *clave)
 	}
 	return NULL;
 }
-void *quitar_nodo(nodo_t **primer_nodo, char *clave)
+void *quitar_nodo(nodo_t **primer_nodo, char *clave, bool *encontrado)
 {
 	if (primer_nodo == NULL)
 		return NULL;
@@ -58,7 +58,8 @@ void *quitar_nodo(nodo_t **primer_nodo, char *clave)
 	if (aux == NULL)
 		return NULL;
 
-	while (aux != NULL && strcmp(aux->clave, clave) != 0) {
+	while (aux != NULL && aux->clave != NULL &&
+	       strcmp(aux->clave, clave) != 0) {
 		anterior = aux;
 		aux = aux->siguiente;
 	}
@@ -70,11 +71,11 @@ void *quitar_nodo(nodo_t **primer_nodo, char *clave)
 	else {
 		anterior->siguiente = aux->siguiente;
 	}
-
-	void *encontrado = aux->valor;
+	*encontrado = true;
+	void *encontrado_p = aux->valor;
 	free(aux->clave);
 	free(aux);
-	return encontrado;
+	return encontrado_p;
 }
 
 bool insertar_nodo(nodo_t **primer_nodo, nodo_t *nuevo_nodo, void **encontrado,

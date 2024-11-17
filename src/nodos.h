@@ -14,7 +14,7 @@ nodo_t *crear_nodo(char *clave, void *valor);
 
 void *buscar_nodo_elemento(nodo_t **primer_nodo, char *clave);
 
-void *quitar_nodo(nodo_t **primer_nodo, char *clave);
+void *quitar_nodo(nodo_t **primer_nodo, char *clave, bool *encontrado);
 
 bool insertar_nodo(nodo_t **primer_nodo, nodo_t *nuevo_nodo, void **encontrado,
 		   bool *modificar);
